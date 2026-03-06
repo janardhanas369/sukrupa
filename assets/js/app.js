@@ -5,8 +5,7 @@ const navLinks = [
   ['Impact', 'impact.html'],
   ['Get Involved', 'involved.html'],
   ['Stories', 'stories.html'],
-  ['News & Events', 'news.html'],
-  ['Donate', 'donate.html']
+  ['News & Events', 'news.html']
 ];
 
 const utilityLinks = [
@@ -46,7 +45,7 @@ function injectLayout() {
   const footer = document.getElementById('site-footer');
   if (!topbar || !nav || !footer) return;
 
-  topbar.innerHTML = `<div class="topbar bg-primary text-white text-sm py-2"><div class="max-w-7xl mx-auto px-4 flex flex-wrap justify-end gap-4">${utilityLinks.map(([name, href]) => `<a href="${href}" class="transition">${name}</a>`).join('')}</div></div>`;
+  topbar.innerHTML = `<div class="topbar nav-topbar bg-primary text-white text-sm py-2"><div class="max-w-7xl mx-auto px-4 flex flex-wrap justify-end gap-4">${utilityLinks.map(([name, href]) => `<a href="${href}" class="transition">${name}</a>`).join('')}</div></div>`;
 
   nav.innerHTML = `
     <div class="nav-fixed border-b border-slate-200">
