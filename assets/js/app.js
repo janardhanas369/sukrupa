@@ -15,6 +15,31 @@ const utilityLinks = [
   ['Contact', 'contact.html']
 ];
 
+const ALLOWED_THEMES = new Set(['default', 'sunrise', 'forest']);
+
+try {
+  const earlyTheme = localStorage.getItem('sukrupa-theme') || 'default';
+  if (ALLOWED_THEMES.has(earlyTheme) && earlyTheme !== 'default') {
+    document.documentElement.setAttribute('data-theme', earlyTheme);
+  }
+} catch (error) {
+  // ignore storage access issues
+}
+
+
+function applyTheme(theme) {
+  const nextTheme = ALLOWED_THEMES.has(theme) ? theme : 'default';
+  if (nextTheme === 'default') {
+    document.documentElement.removeAttribute('data-theme');
+    document.body.removeAttribute('data-theme');
+  } else {
+    document.documentElement.setAttribute('data-theme', nextTheme);
+    document.body.setAttribute('data-theme', nextTheme);
+  }
+  localStorage.setItem('sukrupa-theme', nextTheme);
+  return nextTheme;
+}
+
 function injectLayout() {
   const topbar = document.getElementById('topbar');
   const nav = document.getElementById('main-nav');
@@ -34,7 +59,8 @@ function injectLayout() {
           ${navLinks.map(([name, href]) => `<a href="${href}" class="transition">${name}</a>`).join('')}
         </div>
         <div class="flex items-center gap-3">
-          <select id="theme-picker" class="border rounded-lg px-2 py-1 bg-surface text-sm">
+          <label for="theme-picker" class="sr-only">Choose theme</label>
+          <select id="theme-picker" class="border rounded-lg px-2 py-1 bg-surface text-sm" aria-label="Choose theme">
             <option value="default">Theme: Ocean</option>
             <option value="sunrise">Theme: Sunrise</option>
             <option value="forest">Theme: Forest</option>
@@ -61,17 +87,14 @@ function injectLayout() {
 function initThemePicker() {
   const picker = document.getElementById('theme-picker');
   if (!picker) return;
+
   const savedTheme = localStorage.getItem('sukrupa-theme') || 'default';
-  if (savedTheme !== 'default') document.documentElement.setAttribute('data-theme', savedTheme);
-  picker.value = savedTheme;
+  const activeTheme = applyTheme(savedTheme);
+  picker.value = activeTheme;
+
   picker.addEventListener('change', () => {
-    const value = picker.value;
-    if (value === 'default') {
-      document.documentElement.removeAttribute('data-theme');
-    } else {
-      document.documentElement.setAttribute('data-theme', value);
-    }
-    localStorage.setItem('sukrupa-theme', value);
+    const selectedTheme = applyTheme(picker.value);
+    picker.value = selectedTheme;
   });
 }
 
@@ -92,19 +115,30 @@ function initCounters() {
 }
 
 function initReveal() {
+  const revealEls = [...document.querySelectorAll('.section-reveal')];
+  if (!revealEls.length) return;
+
+  if (!('IntersectionObserver' in window)) {
+    revealEls.forEach((el) => el.classList.add('in-view'));
+    return;
+  }
+
   const observer = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
       if (entry.isIntersecting) entry.target.classList.add('in-view');
     });
   }, { threshold: 0.15 });
-  document.querySelectorAll('.section-reveal').forEach((el) => observer.observe(el));
+
+  revealEls.forEach((el) => observer.observe(el));
 }
 
 function initStories() {
   const slides = [...document.querySelectorAll('.story-slide')];
   if (!slides.length) return;
+
   let i = 0;
   slides[i].classList.add('active');
+
   setInterval(() => {
     slides[i].classList.remove('active');
     i = (i + 1) % slides.length;

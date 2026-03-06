@@ -8,7 +8,7 @@
   --muted: #64748b;
 }
 
-[data-theme='sunrise'] {
+:root[data-theme='sunrise'] {
   --primary: #5a1c3d;
   --accent: #ff7a59;
   --secondary: #f5b700;
@@ -18,7 +18,7 @@
   --muted: #7a617a;
 }
 
-[data-theme='forest'] {
+:root[data-theme='forest'] {
   --primary: #114b3a;
   --accent: #ff9f1c;
   --secondary: #2ec4b6;
@@ -28,18 +28,19 @@
   --muted: #55706a;
 }
 
+html,
 body {
   background: var(--bg);
   color: var(--text);
 }
 
-.bg-primary { background-color: var(--primary); }
-.text-primary { color: var(--primary); }
-.bg-accent { background-color: var(--accent); }
-.text-accent { color: var(--accent); }
-.bg-surface { background-color: var(--surface); }
-.text-muted { color: var(--muted); }
-.border-primary { border-color: var(--primary); }
+.bg-primary, .su-bg-primary { background-color: var(--primary); }
+.text-primary, .su-text-primary { color: var(--primary); }
+.bg-accent, .su-bg-accent { background-color: var(--accent); }
+.text-accent, .su-text-accent { color: var(--accent); }
+.bg-surface, .su-bg-surface { background-color: var(--surface); }
+.text-muted, .su-text-muted { color: var(--muted); }
+.border-primary, .su-border-primary { border-color: var(--primary); }
 
 .hero-overlay {
   background: linear-gradient(90deg, rgba(10,25,41,0.82), rgba(10,25,41,0.32));
@@ -59,14 +60,23 @@ body {
 .story-slide { display: none; }
 .story-slide.active { display: block; }
 
-.topbar a:hover, nav a:hover { color: var(--accent); }
+.topbar a:hover,
+#main-nav a:hover {
+  color: var(--accent);
+}
 
 .nav-fixed {
   position: sticky;
   top: 0;
   z-index: 50;
   backdrop-filter: blur(8px);
-  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  background: var(--surface);
+}
+
+@supports (background: color-mix(in srgb, white 90%, transparent)) {
+  .nav-fixed {
+    background: color-mix(in srgb, var(--surface) 92%, transparent);
+  }
 }
 
 .program-card:hover {
@@ -75,3 +85,16 @@ body {
 }
 
 .program-card { transition: .2s ease; }
+
+@media (prefers-reduced-motion: reduce) {
+  .section-reveal,
+  .program-card,
+  .story-slide {
+    transition: none;
+    animation: none;
+  }
+  .section-reveal {
+    opacity: 1;
+    transform: none;
+  }
+}

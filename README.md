@@ -12,6 +12,13 @@ This repository contains a static multi-page NGO website prototype for Sukrupa.
 - `news.html` — News & Events
 - `donate.html` — Donate
 - `contact.html` — Contact
+- `program-suvidya.html` — Program detail (SuVidya)
+- `program-sukalp.html` — Program detail (SuKalp)
+- `program-sumargadarshak.html` — Program detail (SuMargadarshak)
+- `program-sujanavikas.html` — Program detail (SuJanavikas)
+- `about-story.html` — About detail (Our Story)
+- `about-vision-mission.html` — About detail (Vision & Mission)
+- `about-team.html` — About detail (Leadership Team)
 
 ## Assets
 - `assets/css/app.css` — Theme variables + component styles + animations
