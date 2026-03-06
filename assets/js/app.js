@@ -1,7 +1,26 @@
 const navLinks = [
   ['Home', 'index.html'],
-  ['About Us', 'about.html'],
-  ['Programs', 'programs.html'],
+  {
+    label: 'About Us',
+    href: 'about.html',
+    submenu: [
+      ['Who We Are', 'about.html'],
+      ['Our Story', 'about-story.html'],
+      ['Vision & Mission', 'about-vision-mission.html'],
+      ['Leadership Team', 'about-team.html']
+    ]
+  },
+  {
+    label: 'Programs',
+    href: 'programs.html',
+    submenu: [
+      ['All Programs', 'programs.html'],
+      ['SuVidya', 'program-suvidya.html'],
+      ['SuKalp', 'program-sukalp.html'],
+      ['SuMargadarshak', 'program-sumargadarshak.html'],
+      ['SuJanavikas', 'program-sujanavikas.html']
+    ]
+  },
   ['Impact', 'impact.html'],
   ['Get Involved', 'involved.html'],
   ['Stories', 'stories.html'],
@@ -25,6 +44,24 @@ try {
   // ignore storage access issues
 }
 
+function renderNavLink(item) {
+  if (Array.isArray(item)) {
+    const [name, href] = item;
+    return `<a href="${href}" class="transition">${name}</a>`;
+  }
+
+  const submenu = item.submenu
+    .map(([name, href]) => `<a href="${href}" class="submenu-item block px-3 py-2 rounded-md text-sm">${name}</a>`)
+    .join('');
+
+  return `
+    <div class="nav-dropdown relative">
+      <a href="${item.href}" class="transition inline-flex items-center gap-1">${item.label}<span aria-hidden="true">▾</span></a>
+      <div class="submenu-panel absolute left-0 mt-3 w-56 rounded-xl p-2 bg-surface border border-primary/20 shadow-xl">
+        ${submenu}
+      </div>
+    </div>`;
+}
 
 function applyTheme(theme) {
   const nextTheme = ALLOWED_THEMES.has(theme) ? theme : 'default';
@@ -55,7 +92,7 @@ function injectLayout() {
           <span class="text-primary font-bold text-xl">Sukrupa</span>
         </a>
         <div class="hidden md:flex items-center gap-5 font-medium">
-          ${navLinks.map(([name, href]) => `<a href="${href}" class="transition">${name}</a>`).join('')}
+          ${navLinks.map((item) => renderNavLink(item)).join('')}
         </div>
         <div class="flex items-center gap-3">
           <label for="theme-picker" class="sr-only">Choose theme</label>

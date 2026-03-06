@@ -83,6 +83,26 @@ body {
   box-shadow: 0 10px 22px rgba(0,0,0,.07);
 }
 
+
+.nav-dropdown .submenu-panel {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(8px);
+  transition: all .18s ease;
+}
+
+.nav-dropdown:hover .submenu-panel,
+.nav-dropdown:focus-within .submenu-panel {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.submenu-item:hover {
+  background: color-mix(in srgb, var(--primary) 10%, white);
+  color: var(--primary);
+}
+
 .program-card,
 .bg-surface.rounded-2xl,
 .bg-surface.rounded-xl {
