@@ -63,6 +63,24 @@ function renderNavLink(item) {
     </div>`;
 }
 
+function renderMobileNavLink(item) {
+  if (Array.isArray(item)) {
+    const [name, href] = item;
+    return `<a href="${href}" class="mobile-link block px-3 py-2 rounded-lg">${name}</a>`;
+  }
+
+  return `
+    <details class="mobile-details rounded-lg bg-surface/60">
+      <summary class="px-3 py-2 cursor-pointer list-none flex items-center justify-between">
+        <span>${item.label}</span><span aria-hidden="true">▾</span>
+      </summary>
+      <div class="pl-3 pb-2 space-y-1">
+        <a href="${item.href}" class="mobile-link block px-3 py-2 rounded-lg">Overview</a>
+        ${item.submenu.map(([name, href]) => `<a href="${href}" class="mobile-link block px-3 py-2 rounded-lg text-sm">${name}</a>`).join('')}
+      </div>
+    </details>`;
+}
+
 function applyTheme(theme) {
   const nextTheme = ALLOWED_THEMES.has(theme) ? theme : 'default';
   if (nextTheme === 'default') {
@@ -94,7 +112,7 @@ function injectLayout() {
         <div class="hidden md:flex items-center gap-5 font-medium">
           ${navLinks.map((item) => renderNavLink(item)).join('')}
         </div>
-        <div class="flex items-center gap-3">
+        <div class="hidden sm:flex items-center gap-3">
           <label for="theme-picker" class="sr-only">Choose theme</label>
           <select id="theme-picker" class="border rounded-lg px-2 py-1 bg-surface text-sm" aria-label="Choose theme">
             <option value="default">Theme: Ocean</option>
@@ -102,6 +120,20 @@ function injectLayout() {
             <option value="forest">Theme: Forest</option>
           </select>
           <a href="donate.html" class="bg-accent text-white px-4 py-2 rounded-full font-semibold">Donate</a>
+        </div>
+        <button id="mobile-menu-btn" class="md:hidden inline-flex items-center justify-center rounded-lg border px-3 py-2" aria-expanded="false" aria-controls="mobile-menu" aria-label="Open navigation menu">☰</button>
+      </div>
+      <div id="mobile-menu" class="mobile-menu md:hidden hidden border-t border-slate-200 px-4 py-3">
+        <div class="space-y-2 font-medium">
+          ${navLinks.map((item) => renderMobileNavLink(item)).join('')}
+        </div>
+        <div class="mt-3 pt-3 border-t border-slate-200 flex flex-col gap-2 sm:hidden">
+          <select id="theme-picker-mobile" class="border rounded-lg px-2 py-2 bg-surface text-sm" aria-label="Choose theme (mobile)">
+            <option value="default">Theme: Ocean</option>
+            <option value="sunrise">Theme: Sunrise</option>
+            <option value="forest">Theme: Forest</option>
+          </select>
+          <a href="donate.html" class="bg-accent text-white px-4 py-2 rounded-full font-semibold text-center">Donate</a>
         </div>
       </div>
     </div>`;
@@ -118,20 +150,40 @@ function injectLayout() {
   </footer>`;
 
   initThemePicker();
+  initMobileMenu();
+}
+
+function initMobileMenu() {
+  const button = document.getElementById('mobile-menu-btn');
+  const menu = document.getElementById('mobile-menu');
+  if (!button || !menu) return;
+
+  button.addEventListener('click', () => {
+    const isHidden = menu.classList.contains('hidden');
+    menu.classList.toggle('hidden', !isHidden);
+    button.setAttribute('aria-expanded', String(isHidden));
+    button.textContent = isHidden ? '✕' : '☰';
+  });
 }
 
 function initThemePicker() {
   const picker = document.getElementById('theme-picker');
-  if (!picker) return;
+  const mobilePicker = document.getElementById('theme-picker-mobile');
+  if (!picker && !mobilePicker) return;
 
   const savedTheme = localStorage.getItem('sukrupa-theme') || 'default';
   const activeTheme = applyTheme(savedTheme);
-  picker.value = activeTheme;
+  if (picker) picker.value = activeTheme;
+  if (mobilePicker) mobilePicker.value = activeTheme;
 
-  picker.addEventListener('change', () => {
-    const selectedTheme = applyTheme(picker.value);
-    picker.value = selectedTheme;
-  });
+  const onChange = (value) => {
+    const selectedTheme = applyTheme(value);
+    if (picker) picker.value = selectedTheme;
+    if (mobilePicker) mobilePicker.value = selectedTheme;
+  };
+
+  if (picker) picker.addEventListener('change', () => onChange(picker.value));
+  if (mobilePicker) mobilePicker.addEventListener('change', () => onChange(mobilePicker.value));
 }
 
 function initCounters() {
